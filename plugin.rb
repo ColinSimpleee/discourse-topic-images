@@ -13,6 +13,9 @@ after_initialize do
       src = img['src']
       Rails.logger.info "Found image src: #{src}"
       src
+    end.select do |url|
+      # 跳过包含emoji的图片URL
+      !url.to_s.include?('emoji')
     end.uniq
 
     total_images = urls.length
