@@ -9,7 +9,14 @@ after_initialize do
     post = object.first_post
     return { urls: [], more_images: false } unless post
     
-    urls = Nokogiri::HTML(post.cooked).css('img').map do |img| 
+    doc = Nokogiri::HTML(post.cooked)
+    
+    # 排除投票工具中的图片
+    doc.css('.poll-container img, .editorjs-poll-tool img, [data-poll-name] img').each do |poll_img|
+      poll_img.remove
+    end
+    
+    urls = doc.css('img').map do |img| 
       src = img['src']
       Rails.logger.info "Found image src: #{src}"
       src
