@@ -16,13 +16,18 @@ after_initialize do
       poll_img.remove
     end
     
+    # 排除引用内容中的图片和头像
+    doc.css('.quote img, .avatar img, img.avatar').each do |quote_img|
+      quote_img.remove
+    end
+    
     urls = doc.css('img').map do |img| 
       src = img['src']
       Rails.logger.info "Found image src: #{src}"
       src
     end.select do |url|
-      # 跳过包含emoji的图片URL
-      !url.to_s.include?('emoji')
+      # 跳过包含emoji和avatar的图片URL
+      !url.to_s.include?('emoji') && !url.to_s.include?('avatar')
     end.uniq
 
     total_images = urls.length
